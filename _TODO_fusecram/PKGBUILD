@@ -1,0 +1,20 @@
+# Contributor: Ismael Barros (RazZziel) <razielmine@gmail.com>
+
+pkgname=fusecram
+pkgver=20051104
+pkgrel=2
+pkgdesc="Fusecram is a FUSE module for mounting cramfs image files, created for use with the klik system."
+url="http://freshmeat.net/projects/fusecram/"
+license="GPL"
+arch=(i686)
+depends=('zlib' 'fuse' 'glib2')
+makedepends=('autoconf' 'make' 'gcc')
+source=(http://freshmeat.net/redir/fusecram/60638/url_bz2/fusecram-${pkgver}.tar.bz2)
+md5sums=('2ca76662e842d57f5ca796b5608a72d9')
+
+build() {
+  cd $startdir/src/$pkgname-$pkgver
+  ./configure --prefix=$startdir/pkg/usr
+  make
+  make install
+}

@@ -1,0 +1,30 @@
+# Contributor: Ismael Barros (RazZziel) <razielmine@gmail.com>
+
+pkgname=panosalado-svn
+pkgver=136
+pkgrel=1
+pkgdesc="Open source Flash based 360º panorama viewer."
+arch=('i686')
+url="http://www.panosalado.com/"
+license=('MIT')
+makedepends=('subversion' 'flex-sdk')
+
+_svntrunk=http://panosalado.googlecode.com/svn/trunk/
+_svnmod=panosalado
+
+build() {
+  cd "$srcdir"
+  if [ -d $_svnmod/.svn ]; then
+    (cd $_svnmod && svn up -r $pkgver)
+  else
+    svn co $_svntrunk --config-dir ./ -r $pkgver $_svnmod
+  fi
+  msg "SVN checkout done or server timeout"
+
+  msg "Starting make..."
+  cd $_svnmod/src
+  
+  for i in *.as; do
+    /opt/flex-sdk/bin/mxmlc "$i"
+  done
+}

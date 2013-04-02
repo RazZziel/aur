@@ -1,0 +1,27 @@
+# Contributor: Ismael Barros (RazZziel) <razielmine@gmail.com>
+
+pkgname=flickrfs
+pkgver=1.3.9
+pkgrel=1
+pkgdesc="Standalone web browser from mozilla.org"
+url="http://flickrfs.sourceforge.net/"
+license=('GPL2')
+arch=(i686)
+depends=('python-fuse')
+source=(http://downloads.sourceforge.net/project/${pkgname}/${pkgname}-${pkgver}/${pkgname}-${pkgver}/${pkgname}-${pkgver}.tar.gz)
+md5sums=('3a423880cb7a9e61b26bad2e830accf1')
+
+build() {
+  install -d $pkgdir/usr/lib/$pkgname $pkgdir/usr/bin/
+  cp -a $srcdir/$pkgname-$pkgver/* $pkgdir/usr/lib/$pkgname/
+  ln -s /usr/lib/$pkgname/flickrfs.py $pkgdir/usr/bin/flickrfs
+
+  # Add shabang
+  cat > $pkgdir/usr/lib/$pkgname/flickrfs.py <<EOF
+#!/usr/bin/env python
+import warnings
+warnings.filterwarnings("ignore")
+EOF
+  cat $srcdir/$pkgname-$pkgver/flickrfs.py >> $pkgdir/usr/lib/$pkgname/flickrfs.py
+  sed -e "s/from fuse import Fuse/import fuse\nfrom fuse import Fuse\nfuse.fuse_python_api = (0, 2)/" $pkgdir/usr/lib/$pkgname/flickrfs.py -i
+}

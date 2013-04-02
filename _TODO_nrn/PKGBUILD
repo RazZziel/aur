@@ -1,0 +1,21 @@
+# Contributor: Ismael Barros (RazZziel) <razielmine@gmail.com>
+pkgname=nrn
+pkgver=7.1
+pkgrel=1
+pkgdesc="Simulation environment for building and using computational models of neurons and networks of neurons."
+arch=(i686 x86_64)
+url="http://www.neuron.yale.edu/neuron/"
+license=('GPL')
+depends=(iv)
+source=(http://www.neuron.yale.edu/ftp/neuron/versions/v${pkgver}/nrn-${pkgver}.tar.gz)
+md5sums=('cd5dd415c1f71f11604a58e57f1cd7f9')
+
+build() {
+  cd $srcdir/nrn-${pkgver}
+
+  ./configure --prefix=$pkgdir/usr || return 1
+  make || return 1
+  make install || return 1
+  mv $pkgdir/usr/$CARCH/* $pkgdir/usr/
+  rmdir $pkgdir/usr/$CARCH/
+}

@@ -1,0 +1,44 @@
+# Contributor: Ismael Barros (RazZziel) <razielmine@gmail.com>
+
+pkgname=cedet-cvs
+pkgver=20090829
+pkgrel=1
+pkgdesc="tools written with the end goal of creating an advanced development environment in Emacs - CVS version."
+arch=('any')
+url="http://cedet.sourceforge.net/"
+license=('GPL')
+conflicts=('cedet')
+provides=('cedet')
+depends=('emacs')
+makedepends=('cvs')
+install=$pkgname.install
+
+_cvsroot=:pserver:anonymous@cedet.cvs.sourceforge.net:/cvsroot/cedet
+_cvsmod=cedet
+
+build() {
+  cd "$srcdir"
+
+  msg "Connecting to CVS server...."
+  if [ -d $_cvsmod/CVS ]; then
+    cd $_cvsmod
+    cvs -z3 update -dP
+  else
+    cvs -z3 -d $_cvsroot co -D $pkgver -f $_cvsmod || return 1
+    cd $_cvsmod
+  fi
+  msg "CVS checkout done or server timeout"
+  msg "Starting build ..."
+
+  make PREFIX=$pkgdir/usr || return 1
+
+  install -d $pkgdir/usr/share/emacs/site-lisp/
+  cp -a $srcdir/cedet $pkgdir/usr/share/emacs/site-lisp/
+
+  install -d $pkgdir/usr/share/info
+  make PREFIX=$pkgdir/usr INSTALL_INFO=install-info install-info || return 1
+
+  find $pkgdir -name CVS -exec rm -r {} +
+  find $pkgdir -name .cvsignore -exec rm {} +
+  rm $pkgdir/usr/share/info/dir
+}

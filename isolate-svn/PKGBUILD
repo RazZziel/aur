@@ -1,0 +1,36 @@
+# Contributor: Ismael Barros (RazZziel) <razielmine@gmail.com>
+
+pkgname=isolate-svn
+pkgver=12
+pkgrel=1
+pkgdesc="Utility for isolating Unix processes, minimizing their privilege"
+arch=(i686)
+url="http://code.google.com/p/isolate/"
+license=('GPL')
+source=()
+md5sums=()
+depends=()
+makedepends=('subversion')
+
+_svntrunk=http://isolate.googlecode.com/svn/trunk/
+_svnmod=isolate
+
+build() {
+  cd "$srcdir"
+  if [ -d $_svnmod/.svn ]; then
+    (cd $_svnmod && svn up -r $pkgver)
+  else
+    svn co $_svntrunk --config-dir ./ -r $pkgver $_svnmod
+  fi
+  msg "SVN checkout done or server timeout"
+
+  msg "Starting make..."
+  cd $_svnmod
+
+  install -d $pkgdir/usr/local/bin/isolate
+
+
+  sed -e "s,/usr,$pkgdir/usr,g" Makefile -i || return 1
+  make || return 1
+  make install || return 1
+}

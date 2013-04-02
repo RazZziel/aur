@@ -1,0 +1,45 @@
+# Contributor: Ismael Barros (RazZziel) <razielmine@gmail.com>
+
+pkgname=lispbuilder-sdl
+pkgver=1
+pkgrel=1
+pkgdesc="SDL bindings and abstractions for Common Lisp"
+arch=(i686 x86_64)
+url="http://lispbuilder.sourceforge.net/lispbuilder-sdl.html"
+license=('MIT')
+install=install.sh
+source=(http://www.balooga.com/lispbuilder/lispbuilder-sdl.tgz)
+md5sums=('9f04f7923464652349ebf1392fc80494')
+
+depends=('sdl')
+if pacman -Qq clisp-new-clx &>/dev/null; then
+  depends+=('clisp-new-clx' 'cl-asdf' 'cl-alexandria' 'cl-babel' 'cl-cffi' 'cl-trivial-features')
+elif pacman -Qq clisp-gtk2 &>/dev/null; then
+  depends+=('clisp-gtk2' 'cl-asdf' 'cl-alexandria' 'cl-babel' 'cl-cffi' 'cl-trivial-features')
+elif pacman -Qq sbcl &>/dev/null; then
+  depends+=('sbcl' 'cl-alexandria' 'cl-babel' 'cl-cffi' 'cl-trivial-features')
+elif pacman -Qq clisp &>/dev/null; then
+  depends+=('clisp' 'cl-asdf' 'cl-alexandria' 'cl-babel' 'cl-cffi' 'cl-trivial-features')
+elif pacman -Qq cmucl &>/dev/null; then
+  depends+=('cmucl' 'cl-asdf' 'cl-alexandria' 'cl-babel' 'cl-cffi' 'cl-trivial-features')
+else
+  depends+=('sbcl' 'cl-alexandria' 'cl-babel' 'cl-cffi' 'cl-trivial-features')
+fi
+
+build() {
+  cd $srcdir/$pkgname
+
+  install -d ${pkgdir}/usr/share/common-lisp/source${pkgname}/
+  cp -a examples ${pkgdir}/usr/share/common-lisp/source/${pkgname}/
+  for _dir in base glue-cl-vectors glue-sdl glue-vecto sdl; do
+    install -m 644 -t ${pkgdir}/usr/share/common-lisp/source/${pkgname}/${_dir} ${_dir}/* || return 1
+  done
+
+  install -m 644 -t ${pkgdir}/usr/share/common-lisp/source/${pkgname} *.asd || return 1
+  install -m 644 -t ${pkgdir}/usr/share/licenses/${pkgname} COPYING || return 1
+
+  cd ${pkgdir}/usr/share/common-lisp/systems
+  for _asd in cl-glu cl-glu-examples cl-glut cl-opengl; do
+    ln -s ../source/${pkgname}/${_asd}.asd .
+  done
+}

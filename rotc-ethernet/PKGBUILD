@@ -1,0 +1,30 @@
+# Contributor: Ismael Barros (RazZziel) <razielmine@gmail.com>
+
+pkgname=rotc-ethernet
+pkgver=prototype1.10
+pkgrel=1
+pkgdesc="Revenge Of The Cats: Ethernet - A free, independent multiplayer FPS computer game."
+arch=('i686' 'x86_64')
+url="http://ethernet.wasted.ch/"
+license=('custom')
+[ "$CARCH" = "i686" ] && depends=('libgl' 'sdl' 'libtheora' 'libxft')
+[ "$CARCH" = "x86_64" ] && depends=('lib32-libgl' 'lib32-sdl' 'lib32-libtheora' 'lib32-libxft')
+install=$pkgname.install
+source=(http://files.wasted.ch/software/rotc-ethernet/$pkgname-$pkgver-linux.tar.gz $pkgname.desktop $pkgname.png $pkgname)
+md5sums=('185d3e83c1a8da7228dd17404ae46204' '72a3e5440719de46b583a4caa055619e'\
+         '1ee90556779891fe9911729fbadc119c' 'df7b4213992b575a5e8ea87af571176c')
+
+build() {
+  install -d $pkgdir/usr/share/$pkgname $pkgdir/usr/bin
+
+  cp -a $srcdir/$pkgname-$pkgver/* $pkgdir/usr/share/$pkgname/
+  install -m755 $srcdir/$pkgname $pkgdir/usr/bin/
+  chmod +x $pkgdir/usr/share/$pkgname/rotc.bin
+  rm $pkgdir/usr/share/$pkgname/rotc
+
+  install -d $pkgdir/usr/share/applications/
+  install -m644 $startdir/src/$pkgname.desktop $pkgdir/usr/share/applications/
+
+  install -d $pkgdir/usr/share/pixmaps/
+  install -m644 $srcdir/$pkgname.png $pkgdir/usr/share/pixmaps/
+}
